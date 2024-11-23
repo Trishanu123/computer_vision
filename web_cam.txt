@@ -1,0 +1,42 @@
+import torch
+import cv2
+from ultralytics import YOLO
+
+# Load a pre-trained YOLOv8 model
+model = YOLO('yolov8x.pt')  # 'yolov8n.pt' is a small, fast model.
+
+# Initialize the webcam feed
+cap = cv2.VideoCapture(0)  # 0 is the default camera. Change if you have multiple cameras
+
+if not cap.isOpened():
+    print("Error: Could not open video stream from the webcam.")
+    exit()
+
+# Loop to continuously get frames from the webcam
+while True:
+    # Capture frame-by-frame
+    ret, frame = cap.read()
+
+    if not ret:
+        print("Error: Failed to capture image")
+        break
+
+    # Perform inference on the current frame
+    results = model(frame)
+
+    # Iterate through results and visualize each one
+    for result in results:
+        # result.plot() will draw the bounding boxes and labels on the image
+        annotated_frame = result.plot()
+        
+
+    # Display the annotated frame using OpenCV
+    cv2.imshow('YOLOv8 Webcam Detection', annotated_frame)
+
+    # Break the loop if 'q' is pressed
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+# Release the capture and close any OpenCV windows
+cap.release()
+cv2.destroyAllWindows()
